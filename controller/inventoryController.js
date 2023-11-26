@@ -8,9 +8,9 @@ async function createInventory(req, res, next) {
     try {
         // console.log("reqqqqqqqqqq", req);
         // console.log("reqqqqqqqqqqbopdyu", req);
-        const { make, model, quantity, sku, status, location_id } = req.body;
+        const { make, model, quantity, status, location_id } = req.body;
         const rslt = await InventoryServices.createInventoryservice(
-            make, model, quantity, sku, status, location_id
+            make, model, quantity, status, location_id
         );
         return res
             .status(201)

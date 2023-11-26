@@ -1,4 +1,4 @@
-
+const { Op } = require('sequelize');
 const { stat } = require("fs");
 const {
     Inventory,
@@ -6,6 +6,7 @@ const {
     Order
 } = require("../models/index");
 const { log } = require("console");
+const { ApiBadRequestError } = require('../errors');
 
 class OrderServices {
     async createOrder(date,
@@ -16,12 +17,13 @@ class OrderServices {
         to_location_id,) {
         const inventory = await Inventory.findByPk(inventory_id);
 
-        // Get from_location_id and to_location_id using location names
         const fromLocation = await Location.findOne({ where: { location_id: from_location_id } });
         const toLocation = await Location.findOne({ where: { location_id: to_location_id } });
 
         if (!inventory || !fromLocation || !toLocation) {
-            return res.status(404).json({ message: 'Inventory or location not found' });
+            // return ({ message: 'Inventory or location not found' });
+            throw new ApiBadRequestError("Inventory or location not found");
+
         }
 
         // Create the order
@@ -58,7 +60,7 @@ class OrderServices {
         if (updatedOrders[0] === 0) {
             throw new Error('order not found or could not be updated');
         }
-        const updatedItem = await Location.findByPk(orderidd);
+        const updatedItem = await Order.findByPk(orderidd);
         return updatedItem;
     }
     async deleteOrder(orderid) {
@@ -81,6 +83,25 @@ class OrderServices {
         } catch (error) {
             throw error;
         }
+    }
+    async getFilteredorders({ startDate, endDate, minPrice, maxPrice }) {
+        const filter = {};
+        console.log(startDate, endDate);
+        if (startDate && endDate) {
+            filter.date = {
+                [Op.between]: [new Date(startDate), new Date(endDate)],
+            };
+        }
+        if (minPrice && maxPrice) {
+            filter.selling_price = {
+                [Op.between]: [+minPrice, +maxPrice],
+            };
+        }
+
+        // Fetch orders using the applied filters
+        const orders = await Order.findAll({ where: filter });
+
+        return orders;
     }
 }
 module.exports = new OrderServices();

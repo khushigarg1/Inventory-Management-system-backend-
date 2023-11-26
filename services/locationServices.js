@@ -1,4 +1,4 @@
-
+const { Op } = require('sequelize')
 const { stat } = require("fs");
 const {
     Inventory,
@@ -58,25 +58,37 @@ class LocationServices {
     }
     async getFilteredlocation({ state, city }) {
         try {
-            // Prepare options for filtering
             const filterOptions = {
                 where: {}
             };
 
-            // Apply filters based on provided query parameters
             if (state) {
-                filterOptions.where.state = state;
+                filterOptions.where.state = {
+                    [Op.substring]: state
+                };
             }
             if (city) {
-                filterOptions.where.city = city;
+                filterOptions.where.city = {
+                    [Op.substring]: city
+                };
             }
-
-            // Fetch filtered inventory
-            const filtereddata = await Location.findAll({
+            const filteredData = await Location.findAll({
                 where: filterOptions.where
             });
+            // const filterOptions = {
+            //     where: {}
+            // };
+            // if (state) {
+            //     filterOptions.where.state = state;
+            // }
+            // if (city) {
+            //     filterOptions.where.city = city;
+            // }
+            // const filtereddata = await Location.findAll({
+            //     where: filterOptions.where
+            // });
 
-            return filtereddata;
+            return filteredData;
         } catch (error) {
             throw error;
         }

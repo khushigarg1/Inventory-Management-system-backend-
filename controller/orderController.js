@@ -84,7 +84,20 @@ async function getAllOrders(req, res, next) {
         next(error)
     }
 }
-module.exports = { createOrder, updatedOrder, deleteOrder, getAllOrders }
+async function getFilteredOrders(req, res, next) {
+    try {
+        const { startDate, endDate, minPrice, maxPrice } = req.query;
+        // console.log(state, city);
+        const filteredOrder = await OrderServices.getFilteredorders({
+            startDate, endDate, minPrice, maxPrice
+        });
+        return res.status(200).json(filteredOrder);
+    } catch (error) {
+        console.log(error);
+        next(error)
+    }
+}
+module.exports = { createOrder, updatedOrder, deleteOrder, getAllOrders, getFilteredOrders }
 // const orderController = {
 //     createOrder: async (req, res) => {
 //         try {

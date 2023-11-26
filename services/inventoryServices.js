@@ -5,8 +5,21 @@ const {
 } = require("../models/index");
 const { log } = require("console");
 
+async function createUniqueSKU() {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let sku = '';
+    for (let i = 0; i < 10; i++) {
+        sku += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    const existingSKU = await Inventory.findOne({ where: { sku: sku } });
+    if (existingSKU) {
+        return createUniqueSKU(); // SKU exists, generate a new one
+    }
+    return sku; // Unique SKU generated
+}
 class InventoryServices {
-    async createInventoryservice(make, model, quantity, sku, status, location_id) {
+    async createInventoryservice(make, model, quantity, status, location_id) {
+        const sku = await createUniqueSKU();
         const rslt = await Inventory.create({
             make: make,
             model: model,

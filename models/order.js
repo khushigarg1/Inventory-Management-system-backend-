@@ -10,7 +10,7 @@ const Order = sequelize.define('order', {
         allowNull: false,
     },
     date: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
     },
     status: {

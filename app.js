@@ -7,11 +7,14 @@ var cookieParser = require('cookie-parser');
 var mlogger = require('morgan');
 var router = require('./routes/index');
 
+const cors = require('cors');
 // var createError = require('http-errors');
 const { logError, returnError } = require("./errors");
 const { logger } = require("./logger");
 const { sequelize } = require("./config/db");
 var app = express();
+app.use(cors());
+
 
 // var usersRouter = require('./routes/users');
 const table = require('./models/index')
@@ -38,7 +41,6 @@ app.use(function (req, res, next) {
 // error handler
 app.use(logError);
 app.use(returnError);
-
 
 
 // // Add middleware to parse incoming requests with JSON payloads
